@@ -19,29 +19,50 @@ jobs:
           - name: windows-x64-msvc
             runner: windows-2025
             target: X86
-            generator: "Visual Studio"
+            generator: Visual Studio 17 2022
+            cmake_flags: -A x64
+
           - name: windows-arm64-msvc
             runner: windows-11-arm
             target: AArch64
-            msvc: true
+            generator: Visual Studio 17 2022
+            cmake_flags: -A ARM64
+
           - name: windows-x64-mingw
             runner: windows-2025
             target: X86
+            generator: Ninja
+            cmake_flags: ""
+
           - name: windows-arm64-mingw
             runner: windows-11-arm
             target: AArch64
+            generator: Ninja
+            cmake_flags: ""
+
           - name: macos-x64
             runner: macos-13
             target: X86
+            generator: Ninja
+            cmake_flags: ""
+
           - name: macos-arm64
             runner: macos-15
             target: AArch64
+            generator: Ninja
+            cmake_flags: ""
+
           - name: linux-x64
             runner: ubuntu-24.04
             target: X86
+            generator: Ninja
+            cmake_flags: ""
+
           - name: linux-arm64
             runner: ubuntu-24.04-arm
             target: AArch64
+            generator: Ninja
+            cmake_flags: ""
 
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.runner }}
@@ -52,7 +73,6 @@ jobs:
 
     steps:
       - name: Download Source
-        shell: bash
         run: gh release download "llvmorg-$VERSION" -R "llvm/llvm-project" -p "$SOURCE.tar.xz"
 
       - name: Extract Source
@@ -60,13 +80,13 @@ jobs:
         run: tar xf "$SOURCE.tar.xz" || true
 
       - name: Build
-        shell: bash
         run: |
           cd "$SOURCE"
-          cmake -S llvm -B build -G Ninja \
+          cmake -S llvm -B build -G ${{ matrix.generator }} ${{ matrix.cmake_flags }} \
             -DCMAKE_BUILD_TYPE=MinSizeRel \
             -DCMAKE_INSTALL_PREFIX=install \
-            -DLLVM_TARGETS_TO_BUILD=${{ matrix.target }}
+            -DLLVM_TARGETS_TO_BUILD=${{ matrix.target }} \
+            -DLLVM_ENABLE_PROJECTS="clang"
           ninja -C build install
 
       - name: Upload Artifact
