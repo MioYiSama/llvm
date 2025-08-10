@@ -2,6 +2,10 @@ name: Build
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "LLVM version"
+        required: true
 
 jobs:
   build:
@@ -43,4 +47,4 @@ jobs:
         shell: bash
         run: |
           chmod +x ./build.sh
-          ./build.sh ${GITHUB_REF#refs/tags/v}
+          ./build.sh ${{ github.event.inputs.version }}
