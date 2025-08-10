@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "LLVM version"
+        description: "Version"
         required: true
 
 jobs:
@@ -47,19 +47,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download Source
+        shell: bash
         run: gh release download "llvmorg-$VERSION" -R "llvm/llvm-project" -p "llvm-project-$VERSION.src.tar.xz"
 
-      - name: Extract Source (Windows)
-        if: ${{ matrix.os == 'windows'}}
-        run: |
-          7z x "llvm-project-$VERSION.src.tar.xz"
-          7z x "llvm-project-$VERSION.src.tar"
-
-      - name: Extract Source (UNIX)
-        if: ${{ matrix.os != 'windows'}}
+      - name: Extract Source
+        shell: bash
         run: tar xf "llvm-project-$VERSION.src.tar.xz"
 
       - name: Build
+        shell: bash
         run: |
           cd "llvm-project-$VERSION.src"
           ls
