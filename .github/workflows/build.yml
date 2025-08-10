@@ -89,7 +89,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=install \
             -DLLVM_TARGETS_TO_BUILD=${{ matrix.target }} \
             -DLLVM_ENABLE_PROJECTS="clang"
-          ninja -C build install
+          cmake --build build -t install
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
