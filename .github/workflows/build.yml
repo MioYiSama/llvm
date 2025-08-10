@@ -16,10 +16,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: windows-x64
+          - name: windows-x64-msvc
             runner: windows-2025
             target: X86
-          - name: windows-arm64
+            generator: "Visual Studio"
+          - name: windows-arm64-msvc
+            runner: windows-11-arm
+            target: AArch64
+            msvc: true
+          - name: windows-x64-mingw
+            runner: windows-2025
+            target: X86
+          - name: windows-arm64-mingw
             runner: windows-11-arm
             target: AArch64
           - name: macos-x64
@@ -87,4 +95,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.VERSION }}
-          files: artifacts/*
+          files: artifacts/**/*
