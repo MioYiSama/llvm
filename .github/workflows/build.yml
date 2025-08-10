@@ -19,14 +19,14 @@ jobs:
           - name: windows-x64-msvc
             runner: windows-2025
             target: X86
-            generator: Visual Studio 17 2022
-            cmake_flags: -A x64
+            generator: "Visual Studio 17 2022"
+            cmake_flags: "-A x64"
 
           - name: windows-arm64-msvc
             runner: windows-11-arm
             target: AArch64
-            generator: Visual Studio 17 2022
-            cmake_flags: -A ARM64
+            generator: "Visual Studio 17 2022"
+            cmake_flags: "-A ARM64"
 
           - name: windows-x64-mingw
             runner: windows-2025
@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           cd "$SOURCE"
-          cmake -S llvm -B build -G ${{ matrix.generator }} ${{ matrix.cmake_flags }} \
+          cmake -S llvm -B build -G "${{ matrix.generator }}" ${{ matrix.cmake_flags }} \
             -DCMAKE_BUILD_TYPE=MinSizeRel \
             -DCMAKE_INSTALL_PREFIX=install \
             -DLLVM_TARGETS_TO_BUILD=${{ matrix.target }} \
