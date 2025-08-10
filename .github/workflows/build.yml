@@ -73,6 +73,7 @@ jobs:
 
     steps:
       - name: Download Source
+        shell: bash
         run: gh release download "llvmorg-$VERSION" -R "llvm/llvm-project" -p "$SOURCE.tar.xz"
 
       - name: Extract Source
@@ -80,6 +81,7 @@ jobs:
         run: tar xf "$SOURCE.tar.xz" || true
 
       - name: Build
+        shell: bash
         run: |
           cd "$SOURCE"
           cmake -S llvm -B build -G ${{ matrix.generator }} ${{ matrix.cmake_flags }} \
