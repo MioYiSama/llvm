@@ -13,40 +13,54 @@ jobs:
       matrix:
         include:
           - name: windows-x64
-            os: windows-2025
-            os_name: windows
+            runner: windows-2025
+            os: windows
             arch: x64
           - name: windows-arm64
-            os: windows-11-arm
-            os_name: windows
+            runner: windows-11-arm
+            os: windows
             arch: arm64
           - name: macos-x64
-            os: macos-13
-            os_name: macos
+            runner: macos-13
+            os: macos
             arch: x64
           - name: macos-arm64
-            os: macos-15
-            os_name: macos
+            runner: macos-15
+            os: macos
             arch: arm64
-          - name: ubuntu-x64
-            os: ubuntu-24.04
-            os_name: ubuntu
+          - name: linux-x64
+            runner: ubuntu-24.04
+            os: linux
             arch: x64
-          - name: ubuntu-arm64
-            os: ubuntu-24.04-arm
-            os_name: ubuntu
+          - name: linux-arm64
+            runner: ubuntu-24.04-arm
+            os: linux
             arch: arm64
 
     name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
     env:
       GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ github.event.inputs.version }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build
-        shell: bash
+      - name: Download Source
+        run: gh release download "llvmorg-$VERSION" -R "llvm/llvm-project" -p "llvm-project-$VERSION.src.tar.xz"
+
+      - name: Extract Source
+        if: ${{ matrix.os == 'windows'}}
         run: |
-          chmod +x ./build.sh
-          ./build.sh ${{ github.event.inputs.version }}
+          7z x "llvm-project-$VERSION.src.tar.xz"
+          7z x "llvm-project-$VERSION.src.tar"
+
+      - name: Extract Source
+        if: ${{ matrix.os != 'windows'}}
+        run: |
+          tar xf "llvm-project-$VERSION.src.tar.xz"
+
+      - name: Build
+        run: |
+          cd "llvm-project-$VERSION.src"
+          ls
